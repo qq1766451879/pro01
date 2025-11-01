@@ -45,7 +45,7 @@ services:
     props: # 组件的属性值
       region: ${vars.region}         # 关于变量的使用方法，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#变量赋值
       service:
-        role: acs:ram::1594564184093297:role/AliyunFcDefaultRole
+        role: acs:ram::5770157900501680:role/AliyunFcDefaultRole
         description: Serverless Devs Web Framework Service
         internetAccess: true
         vpcConfig:
