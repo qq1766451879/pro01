@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*d1yn$n+kk=olzf=nv)vprjd29x1zls=rs%j^d#++byl1fodb*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -120,8 +120,13 @@ USE_TZ = False   #默认是Ture，时间是utc时间，由于我们要用本地�
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
 
+
+STATIC_URL = 'http://image.hengyao688.online/static/'
+STATICFILES_DIRS = [
+     os.path.join(BASE_DIR, "static"),
+]
 
 # settings.py 中静态文件配置
 # STATIC_URL = '/static/'  # 静态文件访问URL前缀（需与路由中的^static/对应）
