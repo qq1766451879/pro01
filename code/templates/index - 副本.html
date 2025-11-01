@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=10, minimum-scale=1.0">
+    <title>AIによる株価分析と予測</title>
+    <link rel="stylesheet" href="http://127.0.0.1:701/static/css/style.css">
+</head>
+<body>
+    <!-- 大背景图层 - 在最底层 -->
+    <div class="background-image"></div>
+    
+    <!-- 数字背景图层 -->
+    <div class="number-bg"></div>
+    
+    <!-- 箭头特效图层 -->
+    <div class="arrow-effects">
+        <div class="arrow arrow-1">
+            <img src="http://127.0.0.1:701/static/image/arrow_01.png" alt="Arrow 1">
+        </div>
+        <div class="arrow arrow-2">
+            <img src="http://127.0.0.1:701/static/image/arrow_02.png" alt="Arrow 2">
+        </div>
+        <div class="arrow arrow-3">
+            <img src="http://127.0.0.1:701/static/image/arrow_04.png" alt="Arrow 3">
+        </div>
+        <div class="arrow arrow-4">
+            <img src="http://127.0.0.1:701/static/image/arrow_05.png" alt="Arrow 4">
+        </div>
+    </div>
+    
+    <div class="binary-bg"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header-section">
+            <div class="robot-container">
+                <div class="robot-image">
+                    <img src="http://127.0.0.1:701/static/image/img02.png" alt="AIロボット">
+                </div>
+                <div class="hello-bubble">Hello!</div>
+            </div>
+            
+            <div class="text-container">
+                <div class="sub-title">人工知能とビッグデータ</div>
+                <div class="sub-sub-title">0.5秒で買いか売りがわかる</div>
+            </div>
+            
+            <div class="arrow-indicator">
+                
+                    
+                    <text x="75" y="60" font-size="45" text-anchor="middle" fill="red">オンラインカスタマーサービス</text>
+             
+            </div>
+        </div>
+        
+        <div class="step-container">
+            <div class="step step1 active" id="step1">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label class="input-label">会社名または銘柄記号を入力してください</label>
+                        <input type="text" class="stock-input" id="stockInput" placeholder="例: 7203.T (トヨタ), 9984.T (ソフトバンク)">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">電話番号を入力してください</label>
+                        <input type="text" class="stock-input" id="phoneNumberInput" placeholder="電話番号を入力してください">
+                    </div>
+                    <button class="analyze-btn" id="analyzeBtn">分析を開始</button>
+                </div>
+            </div>
+            
+            <div class="step step2" id="step2">
+                <div class="analyzing-section">
+                    <h2 class="analyzing-title">AI分析実行中</h2>
+                    
+                    <div class="progress-container">
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>市場データ収集中</span>
+                                <span id="progress1Text">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress1"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>テクニカル分析中</span>
+                                <span id="progress2Text">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress2"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>AI予測中</span>
+                                <span id="progress3Text">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step step3" id="step3">
+                <div class="result-section">
+                    <div class="form-title">
+                        <b><span class="sName" style="color:#ffe48f;">151616</span>の株価分析レポートが完成しました</b>
+                    </div>
+                    
+                    <div class="info">
+                        企業アシスタントを追加して、該当する銘柄の分析レポートを受信できます。また、本日のAI推奨優良株をもらえます。
+                    </div>
+                    
+                    <a href="https://ldd8808.com/AbyaIb" class="submit" id="lineBtn">分析レポートをLINEで受け取る</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">高速分析</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">精度の高い予測</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-text">AI技術</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-text">安全安心</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 AI株価分析と予測システム</p>
+        </div>
+    </div>
+
+    <script src="http://127.0.0.1:701/static/js/script.js"></script>
+
+
+</body>
+</html>

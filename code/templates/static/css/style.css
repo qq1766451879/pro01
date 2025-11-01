@@ -1,0 +1,662 @@
+:root {
+    --primary: #00c6ff;
+    --secondary: #0072ff;
+    --accent: #3b82f6;
+    --dark: #0a0a12;
+    --light: #f8f9fa;
+    --success: #00d1b2;
+    --robot-bg: #1a1a2e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Hiragino Sans', 'Meiryo', 'MS PGothic', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* 大背景图层 - 在机器人图层后面 */
+.background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/static/image/bak.png') center/cover no-repeat;
+    z-index: -3;
+    opacity: 0.8;
+}
+
+/* 数字背景图层 */
+.number-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background: url('/static/image/bg_text.png') center/contain repeat-y;
+    z-index: -2;
+    opacity: 0.15;
+    animation: floatNumbers 20s linear infinite;
+}
+
+@keyframes floatNumbers {
+    0% {
+        transform: translateY(0);
+        opacity: 0.15;
+    }
+    80% {
+        opacity: 0.15;
+    }
+    100% {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+}
+
+/* 箭头浮动特效 */
+.arrow-effects {
+    position: fixed;
+    top: 0;
+    right: 5%;
+    width: 200px;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.arrow {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    right: 20px;
+    opacity: 0;
+    animation: arrowSequence 8s ease-in-out infinite;
+}
+
+.arrow img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.8));
+}
+
+.arrow-1 {
+    top: 20%;
+    animation-delay: 0s;
+}
+
+.arrow-2 {
+    top: 35%;
+    animation-delay: 2s;
+}
+
+.arrow-3 {
+    top: 50%;
+    animation-delay: 4s;
+}
+
+.arrow-4 {
+    top: 65%;
+    animation-delay: 6s;
+}
+
+@keyframes arrowSequence {
+    0%, 20% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0;
+    }
+    5%, 15% {
+        transform: translateY(-40px) scale(1.2);
+        opacity: 1;
+    }
+    10% {
+        transform: translateY(-60px) scale(1);
+        opacity: 0.8;
+    }
+    20%, 100% {
+        transform: translateY(-80px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.binary-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(0deg, 
+            transparent, 
+            transparent 20px, 
+            rgba(0, 198, 255, 0.02) 20px, 
+            rgba(0, 198, 255, 0.02) 21px
+        ),
+        repeating-linear-gradient(90deg, 
+            transparent, 
+            transparent 20px, 
+            rgba(0, 198, 255, 0.02) 20px, 
+            rgba(0, 198, 255, 0.02) 21px
+        );
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: float 3s infinite ease-in-out;
+    opacity: 0;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(0); opacity: 0; }
+    50% { transform: translateY(-20px) scale(1); opacity: 0.6; }
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.robot-container {
+    position: relative;
+    margin-bottom: 0;
+    z-index: 2;
+}
+
+.robot-image {
+    width: 440px;
+    height: 440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.robot-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.hello-bubble {
+    position: absolute;
+    top: 20px;
+    right: 15%;
+    background: white;
+    color: var(--dark);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    animation: bounce 2s infinite;
+    z-index: 3;
+}
+
+.hello-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.text-container {
+    margin-top: -10px;
+    margin-bottom: 25px;
+}
+
+.sub-title {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #00c6ff;
+    line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.sub-sub-title {
+    font-size: 32px;
+    font-weight: 500;
+    margin-bottom: 0;
+    color: #00c6ff;
+    opacity: 0.9;
+    line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.arrow-indicator {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.step-container {
+    position: relative;
+    min-height: 380px;
+}
+
+.step {
+    display: none;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.step.active {
+    display: block;
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.input-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stock-input {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.stock-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.3);
+}
+
+.stock-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.analyze-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 16px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4);
+    width: 100%;
+}
+
+.analyze-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 198, 255, 0.6);
+}
+
+.analyzing-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.analyzing-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.progress-container {
+    margin-bottom: 30px;
+}
+
+.progress-item {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.result-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.form-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #ffe48f;
+    line-height: 1.3;
+}
+
+.form-title b {
+    font-weight: 700;
+}
+
+.info {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 3px solid #3b82f6;
+}
+
+.submit {
+    background: linear-gradient(135deg, #00c853, #009624);
+    color: white;
+    padding: 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 200, 83, 0.4);
+    border: none;
+    display: block;
+    width: 100%;
+}
+
+.submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 200, 83, 0.6);
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.feature {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feature-icon {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.feature-text {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .robot-image {
+        width: 360px;
+        height: 360px;
+    }
+    
+    .text-container {
+        margin-top: -5px;
+        margin-bottom: 20px;
+    }
+    
+    .sub-title {
+        font-size: 28px;
+    }
+    
+    .sub-sub-title {
+        font-size: 24px;
+    }
+    
+    .step-container {
+        min-height: 350px;
+    }
+    
+    .result-section {
+        padding: 20px;
+    }
+    
+    .form-title {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .info {
+        padding: 10px 12px;
+        margin-bottom: 18px;
+        font-size: 13px;
+    }
+    
+    .submit {
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .features {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .arrow-effects {
+        right: 3%;
+        width: 140px;
+    }
+    
+    .arrow {
+        width: 120px;
+        height: 120px;
+        right: 10px;
+    }
+    
+    .arrow-1 { top: 15%; }
+    .arrow-2 { top: 30%; }
+    .arrow-3 { top: 45%; }
+    .arrow-4 { top: 60%; }
+    
+    @keyframes arrowSequence {
+        0%, 20% {
+            transform: translateY(0) scale(0.8);
+            opacity: 0;
+        }
+        5%, 15% {
+            transform: translateY(-30px) scale(1.2);
+            opacity: 1;
+        }
+        10% {
+            transform: translateY(-45px) scale(1);
+            opacity: 0.8;
+        }
+        20%, 100% {
+            transform: translateY(-60px) scale(0.8);
+            opacity: 0;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .robot-image {
+        width: 320px;
+        height: 320px;
+    }
+    
+    .hello-bubble {
+        font-size: 12px;
+        padding: 6px 12px;
+        top: 15px;
+    }
+    
+    .text-container {
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+    
+    .sub-title {
+        font-size: 24px;
+    }
+    
+    .sub-sub-title {
+        font-size: 20px;
+    }
+    
+    .step-container {
+        min-height: 320px;
+    }
+    
+    .input-section, .analyzing-section, .result-section {
+        padding: 18px;
+    }
+    
+    .form-title {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .info {
+        padding: 8px 10px;
+        margin-bottom: 15px;
+        font-size: 12px;
+    }
+    
+    .submit {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .features {
+        margin-top: 12px;
+    }
+    
+    .footer {
+        margin-top: 25px;
+        padding: 15px;
+    }
+    
+    .arrow-effects {
+        right: 2%;
+        width: 120px;
+    }
+    
+    .arrow {
+        width: 100px;
+        height: 100px;
+        right: 6px;
+    }
+    
+    .arrow-1 { top: 10%; }
+    .arrow-2 { top: 25%; }
+    .arrow-3 { top: 40%; }
+    .arrow-4 { top: 55%; }
+}

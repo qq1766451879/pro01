@@ -1,0 +1,1092 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=10, minimum-scale=1.0">
+    <title>AIによる株価分析と予測</title>
+
+    <style>
+        :root {
+    --primary: #00c6ff;
+    --secondary: #0072ff;
+    --accent: #3b82f6;
+    --dark: #0a0a12;
+    --light: #f8f9fa;
+    --success: #00d1b2;
+    --robot-bg: #1a1a2e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Hiragino Sans', 'Meiryo', 'MS PGothic', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0a0a12 0%, #1a1a2e 100%);
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* 大背景图层 - 在机器人图层后面 */
+.background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('http://127.0.0.1:701/static/image/bak.png') center/cover no-repeat;
+    z-index: -3;
+    opacity: 0.8;
+}
+
+/* 数字背景图层 */
+.number-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background: url('http://127.0.0.1:701/static/image/bg_text.png') center/contain repeat-y;
+    z-index: -2;
+    opacity: 0.15;
+    animation: floatNumbers 20s linear infinite;
+}
+
+@keyframes floatNumbers {
+    0% {
+        transform: translateY(0);
+        opacity: 0.15;
+    }
+    80% {
+        opacity: 0.15;
+    }
+    100% {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+}
+
+/* 箭头浮动特效 */
+.arrow-effects {
+    position: fixed;
+    top: 0;
+    right: 5%;
+    width: 200px;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.arrow {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    right: 20px;
+    opacity: 0;
+    animation: arrowSequence 8s ease-in-out infinite;
+}
+
+.arrow img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(0, 198, 255, 0.8));
+}
+
+.arrow-1 {
+    top: 20%;
+    animation-delay: 0s;
+}
+
+.arrow-2 {
+    top: 35%;
+    animation-delay: 2s;
+}
+
+.arrow-3 {
+    top: 50%;
+    animation-delay: 4s;
+}
+
+.arrow-4 {
+    top: 65%;
+    animation-delay: 6s;
+}
+
+@keyframes arrowSequence {
+    0%, 20% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0;
+    }
+    5%, 15% {
+        transform: translateY(-40px) scale(1.2);
+        opacity: 1;
+    }
+    10% {
+        transform: translateY(-60px) scale(1);
+        opacity: 0.8;
+    }
+    20%, 100% {
+        transform: translateY(-80px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.binary-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(0deg, 
+            transparent, 
+            transparent 20px, 
+            rgba(0, 198, 255, 0.02) 20px, 
+            rgba(0, 198, 255, 0.02) 21px
+        ),
+        repeating-linear-gradient(90deg, 
+            transparent, 
+            transparent 20px, 
+            rgba(0, 198, 255, 0.02) 20px, 
+            rgba(0, 198, 255, 0.02) 21px
+        );
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: float 3s infinite ease-in-out;
+    opacity: 0;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) scale(0); opacity: 0; }
+    50% { transform: translateY(-20px) scale(1); opacity: 0.6; }
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.robot-container {
+    position: relative;
+    margin-bottom: 0;
+    z-index: 2;
+}
+
+.robot-image {
+    width: 440px;
+    height: 440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.robot-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.hello-bubble {
+    position: absolute;
+    top: 20px;
+    right: 15%;
+    background: white;
+    color: var(--dark);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    animation: bounce 2s infinite;
+    z-index: 3;
+}
+
+.hello-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.text-container {
+    margin-top: -10px;
+    margin-bottom: 25px;
+}
+
+.sub-title {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #00c6ff;
+    line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.sub-sub-title {
+    font-size: 32px;
+    font-weight: 500;
+    margin-bottom: 0;
+    color: #00c6ff;
+    opacity: 0.9;
+    line-height: 1.1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.arrow-indicator {
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.step-container {
+    position: relative;
+    min-height: 380px;
+}
+
+.step {
+    display: none;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.step.active {
+    display: block;
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.input-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stock-input {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.stock-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.3);
+}
+
+.stock-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.analyze-btn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 16px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4);
+    width: 100%;
+}
+
+.analyze-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 198, 255, 0.6);
+}
+
+.analyzing-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.analyzing-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.progress-container {
+    margin-bottom: 30px;
+}
+
+.progress-item {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.result-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.form-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #ffe48f;
+    line-height: 1.3;
+}
+
+.form-title b {
+    font-weight: 700;
+}
+
+.info {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 3px solid #3b82f6;
+}
+
+.submit {
+    background: linear-gradient(135deg, #00c853, #009624);
+    color: white;
+    padding: 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 200, 83, 0.4);
+    border: none;
+    display: block;
+    width: 100%;
+}
+
+.submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 200, 83, 0.6);
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.feature {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.feature-icon {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.feature-text {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .robot-image {
+        width: 360px;
+        height: 360px;
+    }
+    
+    .text-container {
+        margin-top: -5px;
+        margin-bottom: 20px;
+    }
+    
+    .sub-title {
+        font-size: 28px;
+    }
+    
+    .sub-sub-title {
+        font-size: 24px;
+    }
+    
+    .step-container {
+        min-height: 350px;
+    }
+    
+    .result-section {
+        padding: 20px;
+    }
+    
+    .form-title {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .info {
+        padding: 10px 12px;
+        margin-bottom: 18px;
+        font-size: 13px;
+    }
+    
+    .submit {
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .features {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .arrow-effects {
+        right: 3%;
+        width: 140px;
+    }
+    
+    .arrow {
+        width: 120px;
+        height: 120px;
+        right: 10px;
+    }
+    
+    .arrow-1 { top: 15%; }
+    .arrow-2 { top: 30%; }
+    .arrow-3 { top: 45%; }
+    .arrow-4 { top: 60%; }
+    
+    @keyframes arrowSequence {
+        0%, 20% {
+            transform: translateY(0) scale(0.8);
+            opacity: 0;
+        }
+        5%, 15% {
+            transform: translateY(-30px) scale(1.2);
+            opacity: 1;
+        }
+        10% {
+            transform: translateY(-45px) scale(1);
+            opacity: 0.8;
+        }
+        20%, 100% {
+            transform: translateY(-60px) scale(0.8);
+            opacity: 0;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .robot-image {
+        width: 320px;
+        height: 320px;
+    }
+    
+    .hello-bubble {
+        font-size: 12px;
+        padding: 6px 12px;
+        top: 15px;
+    }
+    
+    .text-container {
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+    
+    .sub-title {
+        font-size: 24px;
+    }
+    
+    .sub-sub-title {
+        font-size: 20px;
+    }
+    
+    .step-container {
+        min-height: 320px;
+    }
+    
+    .input-section, .analyzing-section, .result-section {
+        padding: 18px;
+    }
+    
+    .form-title {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .info {
+        padding: 8px 10px;
+        margin-bottom: 15px;
+        font-size: 12px;
+    }
+    
+    .submit {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .features {
+        margin-top: 12px;
+    }
+    
+    .footer {
+        margin-top: 25px;
+        padding: 15px;
+    }
+    
+    .arrow-effects {
+        right: 2%;
+        width: 120px;
+    }
+    
+    .arrow {
+        width: 100px;
+        height: 100px;
+        right: 6px;
+    }
+    
+    .arrow-1 { top: 10%; }
+    .arrow-2 { top: 25%; }
+    .arrow-3 { top: 40%; }
+    .arrow-4 { top: 55%; }
+}
+    </style>
+</head>
+<body>
+    <!-- 大背景图层 - 在最底层 -->
+    <div class="background-image"></div>
+    
+    <!-- 数字背景图层 -->
+    <div class="number-bg"></div>
+    
+    <!-- 箭头特效图层 -->
+    <div class="arrow-effects">
+        <div class="arrow arrow-1">
+            <img src="http://127.0.0.1:701/static/image/arrow_01.png" alt="Arrow 1">
+        </div>
+        <div class="arrow arrow-2">
+            <img src="http://127.0.0.1:701/static/image/arrow_02.png" alt="Arrow 2">
+        </div>
+        <div class="arrow arrow-3">
+            <img src="http://127.0.0.1:701/static/image/arrow_04.png" alt="Arrow 3">
+        </div>
+        <div class="arrow arrow-4">
+            <img src="http://127.0.0.1:701/static/image/arrow_05.png" alt="Arrow 4">
+        </div>
+    </div>
+    
+    <div class="binary-bg"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header-section">
+            <div class="robot-container">
+                <div class="robot-image">
+                    <img src="http://127.0.0.1:701/static/image/img02.png" alt="AIロボット">
+                </div>
+                <div class="hello-bubble">Hello!</div>
+            </div>
+            
+            <div class="text-container">
+                <div class="sub-title">人工知能とビッグデータ</div>
+                <div class="sub-sub-title">0.5秒で買いか売りがわかる</div>
+            </div>
+            
+            <div class="arrow-indicator">
+                
+                    
+                    <text x="75" y="60" font-size="45" text-anchor="middle" fill="red">オンラインカスタマーサービス</text>
+             
+            </div>
+        </div>
+        
+        <div class="step-container">
+            <div class="step step1 active" id="step1">
+                <div class="input-section">
+                    <div class="input-group">
+                        <label class="input-label">会社名または銘柄記号を入力してください</label>
+                        <input type="text" class="stock-input" id="stockInput" placeholder="例: 7203.T (トヨタ), 9984.T (ソフトバンク)">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">電話番号を入力してください</label>
+                        <input type="text" class="stock-input" id="phoneNumberInput" placeholder="電話番号を入力してください">
+                    </div>
+                    <button class="analyze-btn" id="analyzeBtn">分析を開始</button>
+                </div>
+            </div>
+            
+            <div class="step step2" id="step2">
+                <div class="analyzing-section">
+                    <h2 class="analyzing-title">AI分析実行中</h2>
+                    
+                    <div class="progress-container">
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>市場データ収集中</span>
+                                <span id="progress1Text">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress1"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>テクニカル分析中</span>
+                                <span id="progress2Text">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress2"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span>AI予測中</span>
+                                <span id="progress3Text">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progress3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step step3" id="step3">
+                <div class="result-section">
+                    <div class="form-title">
+                        <b><span class="sName" style="color:#ffe48f;">151616</span>の株価分析レポートが完成しました</b>
+                    </div>
+                    
+                    <div class="info">
+                        企業アシスタントを追加して、該当する銘柄の分析レポートを受信できます。また、本日のAI推奨優良株をもらえます。
+                    </div>
+                    
+                    <a href="https://ldd8808.com/AbyaIb" class="submit" id="lineBtn">分析レポートをLINEで受け取る</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">高速分析</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">精度の高い予測</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-text">AI技術</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-text">安全安心</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 AI株価分析と予測システム</p>
+        </div>
+    </div>
+
+<script>
+    // 创建粒子效果
+function createParticles() {
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 50;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        // 随机位置
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.top = Math.random() * 100 + 'vh';
+        
+        // 随机大小
+        const size = Math.random() * 3 + 1;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        
+        // 随机颜色
+        const colors = ['#00c6ff', '#0072ff', '#3b82f6', '#00d1b2'];
+        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        // 随机动画延迟
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        
+        particlesContainer.appendChild(particle);
+    }
+}
+
+// 步骤切换函数
+function showStep(stepNumber) {
+    // 隐藏所有步骤
+    document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+    });
+    
+    // 显示指定步骤
+    document.getElementById(`step${stepNumber}`).classList.add('active');
+}
+
+// 进度条动画函数 - 优化为更快速版本
+function animateProgress(progressBar, progressText, targetPercent, duration = 300) {
+    return new Promise(resolve => {
+        let currentPercent = 0;
+        const increment = targetPercent / (duration / 20); // 更快的更新频率
+        
+        const timer = setInterval(() => {
+            currentPercent += increment;
+            if (currentPercent >= targetPercent) {
+                currentPercent = targetPercent;
+                clearInterval(timer);
+                resolve();
+            }
+            
+            progressBar.style.width = currentPercent + '%';
+            progressText.textContent = Math.round(currentPercent) + '%';
+        }, 20); // 更短的间隔时间
+    });
+}
+
+
+
+
+// 分析过程函数 - 优化为更快速版本
+async function startAnalysis() {
+    const stockName = document.getElementById('stockInput').value.trim();
+    
+    if (!stockName) {
+        // 输入框抖动效果
+        const input = document.getElementById('stockInput');
+        input.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+            input.style.animation = '';
+        }, 500);
+        input.focus();
+        return;
+    }
+    
+    // 设置结果中的股票名称
+    document.querySelector('.sName').textContent = stockName;
+    
+    // 切换到分析中步骤
+    showStep(2);
+    
+    // 模拟分析过程 - 大幅缩短时间
+    await animateProgress(
+        document.getElementById('progress1'),
+        document.getElementById('progress1Text'),
+        100,
+        250 // 从400ms缩短到250ms
+    );
+    
+    await animateProgress(
+        document.getElementById('progress2'),
+        document.getElementById('progress2Text'),
+        100,
+        250 // 从400ms缩短到250ms
+    );
+    
+    await animateProgress(
+        document.getElementById('progress3'),
+        document.getElementById('progress3Text'),
+        100,
+        250 // 从400ms缩短到250ms
+    );
+    
+    // 延迟一下然后显示结果 - 缩短延迟时间
+    setTimeout(() => {
+        showStep(3);
+    }, 200); // 从300ms缩短到200ms
+}
+
+// 事件监听器
+document.addEventListener('DOMContentLoaded', function() {
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const stockInput = document.getElementById('stockInput');// N++
+    const phoneInput = document.getElementById('phoneNumberInput'); // 电话号码输入框（新增）
+ 
+    
+    if (analyzeBtn) {
+        // 点击事件：先验证再执行分析
+        analyzeBtn.addEventListener('click', function() {
+            // 执行表单验证
+            if (validateForm()) {
+                // 验证通过：执行原分析逻辑并发送jaxa
+                startAnalysis_ajax();
+                startAnalysis();
+            }
+        });
+    }
+    
+    if (stockInput) {
+        stockInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                // e.preventDefault(); // 阻止默认回车行为（如表单提交）
+                if (analyzeBtn) {
+                    analyzeBtn.click();
+                }
+            }
+        });
+    }
+    
+    // 页面加载时创建粒子
+    createParticles();
+    
+    // 自动聚焦到输入框
+    if (stockInput) {
+        stockInput.focus();
+    }
+// 表单验证函数：股票代码和电话不为空
+    function validateForm() {
+        const stockValue = stockInput?.value?.trim() || '';
+        const phoneValue = phoneInput?.value?.trim() || '';
+        let isValid = true;
+
+        // 验证股票代码
+        if (!stockValue) {
+            isValid = false;
+            showError(stockInput, '株式コードは空にできません。');
+            return isValid;
+        } else {
+            clearError(stockInput); // 清除之前的错误状态
+        }
+
+        // 验证电话号码
+        if (!phoneValue) {
+            isValid = false;
+            showError(phoneInput, '電話番号は空欄にできません');
+            return isValid;
+        } else {
+            clearError(phoneInput); // 清除之前的错误状态
+        }
+
+        return isValid;
+    }
+
+    // 显示错误：添加抖动动画+提示
+    function showError(input, message) {
+        // 触发抖动动画
+        input.classList.add('shake');
+        // 动画结束后移除类（避免重复触发时动画不生效）
+        input.addEventListener('animationend', function handler() {
+            input.classList.remove('shake');
+            input.removeEventListener('animationend', handler);
+        }, { once: true });
+
+        // 显示提示信息（可根据需要改为页面内元素显示）
+        alert(message);
+        // 聚焦到错误输入框
+        input.focus();
+    }
+
+    // 清除错误状态（移除可能的样式/类）
+    function clearError(input) {
+        input.classList.remove('shake');
+    }
+
+    // 原分析逻辑（验证通过后执行，这里假设包含发送jaxa的逻辑）
+    function startAnalysis_ajax() {
+        // 获取验证通过的输入值
+        const stockCode = stockInput.value.trim();
+        const phoneNumber = phoneInput.value.trim();
+
+        // 发送数据到jaxa的逻辑（示例）
+        sendToJaxa(stockCode, phoneNumber);
+    }
+
+    // 发送数据到jaxa的函数（根据实际接口调整）
+    function sendToJaxa(stockCode, phone) {
+        // 这里替换为实际的请求逻辑（如fetch/axios）
+        console.log('发送到jaxa的数据：', {
+            stockCode: stockCode,
+            phoneNumber: phone
+        });
+
+        // 示例：模拟请求
+        fetch('http://localhost:8000/api/submit-jaxa/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken') // 如需Django CSRF验证
+            },
+            body: JSON.stringify({
+                StockCode: stockCode,
+                PhoneNumber: phone
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('jaxa接收成功：', data);
+            // 后续逻辑（如跳转、显示结果等）
+        })
+        .catch(error => {
+            console.error('jaxa发送失败：', error);
+        });
+    }
+
+    // 辅助函数：获取CSRF令牌（如需）
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
+// 添加抖动动画（保留原有样式）
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+    .shake {
+        animation: shake 0.5s ease-in-out; /* 应用抖动动画 */
+        border: 2px solid #ff4d4f; /* 错误时添加红色边框（可选） */
+    }
+`;
+document.head.appendChild(style);
+
+
+
+</script>
+
+
+</body>
+</html>
